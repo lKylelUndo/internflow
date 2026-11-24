@@ -1,0 +1,56 @@
+// ============================================================
+// ACADEMIC STRUCTURE
+// Department → Program hierarchy. Departments are the isolation
+// boundary for deans, companies, students, and deployments.
+// ============================================================
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deanProfiles    DeanProfile[]
+  programs        Program[]
+  studentProfiles StudentProfile[]
+  companies       Company[]
+  deployments     Deployment[]
+  ojtRequirements OJTRequirement[]
+}
+
+model Program {
+  id           String   @id @default(uuid())
+  name         String
+  code         String
+  departmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department      Department       @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  studentProfiles StudentProfile[]
+  ojtRequirements OJTRequirement[]
+
+  @@unique([departmentId, code])
+  @@index([departmentId])
+}
+
+// Required OJT hours/documents per department, with optional program-level
+// override (e.g. BEED vs BSED hours inside Education).
+// A NULL programId row is the department default.
+model OJTRequirement {
+  id                String   @id @default(uuid())
+  departmentId      String
+  programId         String?
+  requiredHours     Int
+  requiredDocuments String[]
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  program    Program?   @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, programId])
+  @@index([departmentId])
+}

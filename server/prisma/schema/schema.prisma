@@ -1,0 +1,43 @@
+// ============================================================
+// InternFlow — OJT Deployment & Monitoring System
+// ============================================================
+// Multi-file Prisma schema — this folder is the schema root
+// (prisma.config.ts points here). Every .prisma file is merged:
+//
+//   schema.prisma        → generator + datasource (this file)
+//   enums.prisma         → shared enums
+//   academic.prisma      → Department, Program, OJTRequirement
+//   users.prisma         → User, DeanProfile, StudentProfile, CompanySupervisor
+//   companies.prisma     → Company, Internship
+//   applications.prisma  → InternshipApplication, ApplicationDocument
+//   deployments.prisma   → Deployment, Attendance
+//   monitoring.prisma    → AccomplishmentReport, ReportAttachment, Evaluation
+//   platform.prisma      → Notification, Token, AuditLog
+//
+// Roles:
+//   ADMIN               Platform supervision only: verifies registered deans,
+//                       manages accounts, oversees the app. No department/OJT
+//                       operational features.
+//   DEAN                Scoped to exactly one department (via DeanProfile).
+//   STUDENT             Own profile, applications, deployment, reports.
+//   COMPANY_SUPERVISOR  Scoped to one company (via CompanySupervisor profile).
+//
+// Departments: College of Computer Studies, BSHM, Education
+// Programs:    CCS (1), BSHM (1), Education (BSED English, BSED Science, BEED)
+//
+// Data isolation: every dean-facing query must filter by the dean's
+// departmentId. Companies belong to a department. Deployments carry a
+// departmentId snapshot for fast scoping and reporting.
+//
+// Prisma 7: client is generated into src/generated/prisma (gitignored) and the
+// datasource URL comes from prisma.config.ts (DATABASE_URL in .env).
+// ============================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}

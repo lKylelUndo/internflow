@@ -1,0 +1,46 @@
+// ============================================================
+// APPLICATIONS
+// ============================================================
+
+model InternshipApplication {
+  id               String            @id @default(uuid())
+  studentProfileId String
+  internshipId     String
+  status           ApplicationStatus @default(PENDING)
+  coverLetter      String?
+  rejectionReason  String?
+
+  reviewedById String?
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  internship     Internship     @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  reviewedBy     User?          @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
+
+  documents  ApplicationDocument[]
+  deployment Deployment?
+
+  // One application row per student/internship pair. Re-applying after a
+  // withdrawal resets this row back to PENDING.
+  @@unique([studentProfileId, internshipId])
+  @@index([status])
+  @@index([internshipId])
+}
+
+model ApplicationDocument {
+  id            String       @id @default(uuid())
+  applicationId String
+  type          DocumentType
+  fileName      String
+  fileUrl       String
+  fileSize      Int?
+  mimeType      String?
+  uploadedAt    DateTime     @default(now())
+
+  application InternshipApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}

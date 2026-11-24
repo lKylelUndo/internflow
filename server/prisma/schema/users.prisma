@@ -1,0 +1,102 @@
+// ============================================================
+// USERS & ROLE PROFILES
+// One User row per account; role-specific data lives in exactly
+// one of the profile models.
+// ============================================================
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password      String
+  firstName     String
+  lastName      String
+  middleName    String?
+  contactNumber String?
+  role          RoleType
+  accountStatus AccountStatus @default(PENDING_VERIFICATION)
+
+  // Account verification (ADMIN verifies deans; DEAN verifies students/supervisors).
+  verifiedAt   DateTime?
+  verifiedById String?
+  verifiedBy   User?     @relation("UserVerifications", fields: [verifiedById], references: [id])
+  verifications User[]   @relation("UserVerifications")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  studentProfile    StudentProfile?
+  supervisorProfile CompanySupervisor?
+  deanProfile       DeanProfile?
+
+  // Actions performed by this user (dean/supervisor/admin).
+  applicationsReviewed InternshipApplication[] @relation("ApplicationReviewer")
+  deploymentsCreated   Deployment[]             @relation("DeploymentDeployer")
+  evaluationsReviewed  Evaluation[]             @relation("EvaluationReviewer")
+  attendanceVerified   Attendance[]             @relation("AttendanceVerifier")
+  eligibilityVerified  StudentProfile[]         @relation("EligibilityVerifier")
+
+  notifications Notification[]
+  tokens        Token[]
+  auditLogs     AuditLog[]
+
+  @@index([role, accountStatus])
+}
+
+// A DEAN account is bound to exactly one department.
+model DeanProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  departmentId String   @unique
+  position     String?  @default("Dean")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+}
+
+model StudentProfile {
+  id            String @id @default(uuid())
+  userId        String @unique
+  studentNumber String @unique
+  yearLevel     Int    @default(4)
+  departmentId  String
+  programId     String
+
+  // Dean-controlled eligibility verification (workflow Step 2).
+  eligibilityStatus       EligibilityStatus @default(PENDING)
+  eligibilityVerifiedAt   DateTime?
+  eligibilityVerifiedById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user                   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department             Department @relation(fields: [departmentId], references: [id])
+  program                Program    @relation(fields: [programId], references: [id])
+  eligibilityVerifiedBy  User?      @relation("EligibilityVerifier", fields: [eligibilityVerifiedById], references: [id])
+
+  applications InternshipApplication[]
+  deployments  Deployment[]
+
+  @@index([departmentId, eligibilityStatus])
+  @@index([programId])
+}
+
+model CompanySupervisor {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  companyId String
+  position  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  deployments     Deployment[]
+  evaluations     Evaluation[]
+  reportsReviewed AccomplishmentReport[] @relation("ReportReviewer")
+
+  @@index([companyId])
+}

@@ -1,0 +1,14 @@
+import { z } from 'zod';
+
+export const supervisorSignupSchema = z.object({
+  body: z.object({
+    firstName: z.string().min(2).max(100),
+    middleName: z.string().min(2).max(100).optional(),
+    lastName: z.string().min(2).max(100),
+    email: z.email().max(255),
+    password: z.string().min(8).max(72),
+    contactNumber: z.string().max(20).optional(),
+    companyId: z.uuid(),
+    position: z.string().max(100).optional(),
+  }),
+});

@@ -1,0 +1,73 @@
+// ============================================================
+// DEPLOYMENT & ATTENDANCE
+// ============================================================
+
+model Deployment {
+  id            String           @id @default(uuid())
+  applicationId String           @unique
+  studentProfileId String
+  companyId     String
+  internshipId  String
+  supervisorId  String
+  departmentId  String // snapshot of the student's department at deployment time
+  deployedById  String? // dean who deployed
+  status        DeploymentStatus @default(PENDING_ACCEPTANCE)
+
+  startDate     DateTime  @db.Date
+  endDate       DateTime? @db.Date
+  requiredHours Int // snapshot of the OJTRequirement at deployment time
+  completedHours Float    @default(0) // maintained when attendance is verified
+
+  acceptedAt      DateTime?
+  completedAt     DateTime?
+  cancelledReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  application    InternshipApplication @relation(fields: [applicationId], references: [id])
+  studentProfile StudentProfile        @relation(fields: [studentProfileId], references: [id])
+  company        Company               @relation(fields: [companyId], references: [id])
+  internship     Internship            @relation(fields: [internshipId], references: [id])
+  supervisor     CompanySupervisor     @relation(fields: [supervisorId], references: [id])
+  department     Department            @relation(fields: [departmentId], references: [id])
+  deployedBy     User?                 @relation("DeploymentDeployer", fields: [deployedById], references: [id])
+
+  attendances Attendance[]
+  reports     AccomplishmentReport[]
+  evaluations Evaluation[]
+
+  // NOTE: "at most one active deployment per student" is enforced by a partial
+  // unique index that Prisma cannot express in the schema. Add it in a
+  // follow-up migration:
+  //   CREATE UNIQUE INDEX "one_active_deployment_per_student"
+  //     ON "Deployment" ("studentProfileId")
+  //     WHERE status IN ('PENDING_ACCEPTANCE', 'DEPLOYED', 'IN_PROGRESS');
+  @@index([studentProfileId, status])
+  @@index([departmentId, status])
+  @@index([supervisorId])
+  @@index([companyId])
+}
+
+model Attendance {
+  id            String           @id @default(uuid())
+  deploymentId  String
+  date          DateTime         @db.Date
+  timeIn        DateTime?
+  timeOut       DateTime?
+  hoursRendered Float            @default(0)
+  status        AttendanceStatus @default(PRESENT)
+  remarks       String?
+
+  verifiedById String?
+  verifiedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deployment Deployment @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  verifiedBy User?      @relation("AttendanceVerifier", fields: [verifiedById], references: [id])
+
+  @@unique([deploymentId, date])
+  @@index([deploymentId])
+}

@@ -1,0 +1,79 @@
+// ============================================================
+// SHARED ENUMS
+// ============================================================
+
+enum RoleType {
+  ADMIN
+  DEAN
+  STUDENT
+  COMPANY_SUPERVISOR
+}
+
+enum AccountStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+}
+
+enum EligibilityStatus {
+  PENDING
+  ELIGIBLE
+  INELIGIBLE
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum DeploymentStatus {
+  PENDING_ACCEPTANCE
+  DEPLOYED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  HALF_DAY
+  ABSENT
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  REVISION_REQUESTED
+  APPROVED
+}
+
+enum EvaluationStatus {
+  PENDING
+  SUBMITTED
+  REVIEWED
+}
+
+enum DocumentType {
+  RESUME
+  ENDORSEMENT_LETTER
+  MEDICAL_CERTIFICATE
+  OJT_AGREEMENT
+  OTHER
+}
+
+enum NotificationType {
+  ACCOUNT
+  APPLICATION_UPDATE
+  DEPLOYMENT_UPDATE
+  REPORT_UPDATE
+  EVALUATION_UPDATE
+  ANNOUNCEMENT
+}
+
+enum TokenType {
+  REFRESH
+  PASSWORD_RESET
+}

@@ -1,0 +1,45 @@
+// ============================================================
+// COMPANIES & INTERNSHIP OPPORTUNITIES
+// Companies are owned by a department (dean isolation).
+// ============================================================
+
+model Company {
+  id            String   @id @default(uuid())
+  name          String
+  departmentId  String
+  address       String
+  contactEmail  String?
+  contactNumber String?
+  website       String?
+  description   String?
+  logoUrl       String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  department  Department           @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  supervisors CompanySupervisor[]
+  internships Internship[]
+  deployments Deployment[]
+
+  @@unique([departmentId, name])
+  @@index([departmentId])
+}
+
+model Internship {
+  id          String    @id @default(uuid())
+  companyId   String
+  title       String
+  description String
+  slots       Int       @default(1)
+  isOpen      Boolean   @default(true)
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  company      Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications InternshipApplication[]
+  deployments  Deployment[]
+
+  @@index([companyId, isOpen])
+}

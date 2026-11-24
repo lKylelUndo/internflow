@@ -1,0 +1,73 @@
+// ============================================================
+// MONITORING — weekly accomplishment reports & evaluations
+// ============================================================
+
+model AccomplishmentReport {
+  id           String       @id @default(uuid())
+  deploymentId String
+  weekStart    DateTime     @db.Date
+  weekEnd      DateTime     @db.Date
+  activities   String
+  status       ReportStatus @default(PENDING)
+
+  submittedAt DateTime  @default(now())
+  reviewedById String? // CompanySupervisor
+  reviewedAt   DateTime?
+  feedback     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deployment  Deployment           @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  reviewedBy  CompanySupervisor?   @relation("ReportReviewer", fields: [reviewedById], references: [id])
+  attachments ReportAttachment[]
+
+  @@unique([deploymentId, weekStart])
+  @@index([deploymentId, status])
+}
+
+model ReportAttachment {
+  id         String   @id @default(uuid())
+  reportId   String
+  fileName   String
+  fileUrl    String
+  fileSize   Int?
+  mimeType   String?
+  uploadedAt DateTime @default(now())
+
+  report AccomplishmentReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+}
+
+model Evaluation {
+  id           String           @id @default(uuid())
+  deploymentId String
+  supervisorId String
+  status       EvaluationStatus @default(PENDING)
+
+  // Criteria ratings on a 1–5 scale (0 = not yet scored).
+  workPerformance Int @default(0)
+  communication   Int @default(0)
+  professionalism Int @default(0)
+  teamwork        Int @default(0)
+  punctuality     Int @default(0)
+  overallRating   Float @default(0)
+
+  strengths    String?
+  improvements String?
+  comments     String?
+
+  submittedAt  DateTime?
+  reviewedById String? // dean
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deployment Deployment        @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  supervisor CompanySupervisor @relation(fields: [supervisorId], references: [id])
+  reviewedBy User?             @relation("EvaluationReviewer", fields: [reviewedById], references: [id])
+
+  @@index([deploymentId])
+}
