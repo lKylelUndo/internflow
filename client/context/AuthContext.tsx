@@ -36,8 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (mounted) {
           setUser(response?.data?.user ?? null)
         }
-      } catch (error) {
-        console.error("Session verification failed", error)
+      } catch {
+        // A missing or expired session is expected for anonymous visitors.
+        // Unexpected network/5xx failures are already logged in lib/axios.ts.
         if (mounted) {
           setUser(null)
         }

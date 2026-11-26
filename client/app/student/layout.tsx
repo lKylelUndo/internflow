@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function StudentRootLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGuard mode="STUDENT">
-      <PortalShell roleLabel="Student">{children}</PortalShell>
+      <PortalShell roleLabel="Student" navItems={[{ href: "/student/dashboard", label: "Dashboard" }]}>{children}</PortalShell>
     </AuthGuard>
   )
 }

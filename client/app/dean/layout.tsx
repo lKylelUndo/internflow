@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function DeanRootLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGuard mode="DEAN">
-      <PortalShell roleLabel="Dean">{children}</PortalShell>
+      <PortalShell roleLabel="Dean" navItems={[{ href: "/dean/dashboard", label: "Dashboard" }, { href: "/dean/deployments", label: "Deployments" }, { href: "/dean/supervisors", label: "Supervisors" }, { href: "/dean/companies", label: "Companies" }, { href: "/dean/requirements", label: "Requirements" }]}>{children}</PortalShell>
     </AuthGuard>
   )
 }

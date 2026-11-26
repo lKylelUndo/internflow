@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function SupervisorRootLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGuard mode="COMPANY_SUPERVISOR">
-      <PortalShell roleLabel="Company Supervisor">{children}</PortalShell>
+      <PortalShell roleLabel="Company Supervisor" navItems={[{ href: "/supervisor/dashboard", label: "Dashboard" }]}>{children}</PortalShell>
     </AuthGuard>
   )
 }

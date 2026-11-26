@@ -39,7 +39,6 @@ export default function LoginForm() {
     } catch (error: unknown) {
       const axiosError = error as { response?: { data?: { path?: string; message?: string } } }
       const serverError = axiosError?.response?.data
-      console.error("Login form error:", serverError)
 
       const field = serverError?.path ? normalizeFieldPath(serverError.path) : null
       if (field && serverError?.message) {
@@ -51,17 +50,15 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="flex w-full items-center justify-between">
-        <Link href="/" className="text-sm font-medium text-[var(--cpc-navy)] hover:underline">
-          ← Back to Cordova Public College
-        </Link>
-        <Link href="/signup/student" className="text-sm text-[var(--cpc-slate)] hover:text-[var(--cpc-crimson)] hover:underline">
-          Need an account? Apply as a student
-        </Link>
-      </div>
+    <div className="w-full">
+      <h1 className="font-serif text-display-md font-semibold tracking-tight text-[var(--cpc-navy)] sm:text-display-lg">
+        Sign in
+      </h1>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--cpc-slate)]">
+        Use the email address registered with Cordova Public College.
+      </p>
 
-      <form id="form-rhf-login" onSubmit={form.handleSubmit(onSubmit)} className="mt-6">
+      <form id="form-rhf-login" onSubmit={form.handleSubmit(onSubmit)} className="mt-7">
         <FieldGroup>
           <Field>
             <FieldLabel htmlFor="form-rhf-email">Email address</FieldLabel>
@@ -72,6 +69,7 @@ export default function LoginForm() {
               required
               autoComplete="email"
               aria-invalid={!!errors.email}
+              className="h-11 px-3.5"
               {...form.register("email")}
             />
             <FieldError errors={[errors.email]} />
@@ -83,29 +81,38 @@ export default function LoginForm() {
               required
               autoComplete="current-password"
               aria-invalid={!!errors.password}
+              className="h-11 pl-3.5"
               {...form.register("password")}
             />
             <FieldError errors={[errors.password]} />
           </Field>
         </FieldGroup>
 
-        <Field orientation="horizontal" className="mt-6">
-          <Button
-            type="submit"
-            form="form-rhf-login"
-            disabled={isSubmitting}
-            className="w-full bg-[var(--cpc-navy)] text-[var(--cpc-navy-foreground)] hover:bg-[var(--cpc-navy)]/90"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in…
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </Button>
-        </Field>
+        <Button
+          type="submit"
+          form="form-rhf-login"
+          disabled={isSubmitting}
+          className="mt-6 h-11 w-full"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in…
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </Button>
       </form>
+
+      <p className="mt-6 text-sm text-[var(--cpc-slate)]">
+        Need an account?{" "}
+        <Link
+          href="/signup/student"
+          className="font-medium text-[var(--cpc-crimson)] hover:underline"
+        >
+          Apply as a student
+        </Link>
+      </p>
     </div>
   )
 }

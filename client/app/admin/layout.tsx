@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AdminRootLayout({ children }: { children: ReactNode }) {
   return (
     <AuthGuard mode="ADMIN">
-      <PortalShell roleLabel="Administrator">{children}</PortalShell>
+      <PortalShell roleLabel="Administrator" navItems={[{ href: "/admin/dashboard", label: "Dashboard" }, { href: "/admin/deans", label: "Deans" }]}>{children}</PortalShell>
     </AuthGuard>
   )
 }

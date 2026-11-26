@@ -2,14 +2,10 @@ import { Prisma } from '@/generated/prisma/client';
 import { hashPassword } from '@/lib/bcrypt';
 import { findDepartmentById } from '@/repositories/academic.repository';
 import { createDeanWithProfile, findByEmail } from '@/repositories/user.repository';
+import { getUniqueConstraintFields } from '@/utils/prisma-error';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import type { DeanSignupData, DeanSignupInput } from '@/types/auth';
 import type { ServiceResponse } from '@/types/api';
-
-const uniqueConstraintFields = (error: Prisma.PrismaClientKnownRequestError): string => {
-  const target = error.meta?.target;
-  return Array.isArray(target) ? target.join(',') : String(target ?? '');
-};
 
 export const deanSignupService = {
   execute: async (input: DeanSignupInput): Promise<ServiceResponse<DeanSignupData>> => {
@@ -45,7 +41,7 @@ export const deanSignupService = {
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        if (uniqueConstraintFields(error).includes('departmentId')) {
+        if (getUniqueConstraintFields(error).includes('departmentId')) {
           return {
             status: 'error',
             code: 409,

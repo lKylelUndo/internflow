@@ -1,4 +1,4 @@
-import { Source_Sans_3, Crimson_Pro } from "next/font/google"
+import { Instrument_Sans, Fraunces } from "next/font/google"
 import type { Metadata } from "next"
 
 import "./globals.css"
@@ -7,16 +7,16 @@ import { AuthProvider } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 
-const sans = Source_Sans_3({
+const sans = Instrument_Sans({
   subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-instrument",
+  display: "swap",
 })
 
-const serif = Crimson_Pro({
+const display = Fraunces({
   subsets: ["latin"],
-  variable: "--font-serif",
-  weight: ["400", "600", "700"],
+  variable: "--font-fraunces",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -48,7 +48,8 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", sans.variable, serif.variable, "font-sans")}
+      data-scroll-behavior="smooth"
+      className={cn("antialiased", sans.variable, display.variable, "font-sans")}
     >
       <body>
         <AuthProvider>

@@ -2,14 +2,10 @@ import { Prisma } from '@/generated/prisma/client';
 import { hashPassword } from '@/lib/bcrypt';
 import { createStudentWithProfile, findByEmail, findProgramById } from '@/repositories/user.repository';
 import { issueTokens } from '@/services/auth/issue.tokens.service';
+import { getUniqueConstraintFields } from '@/utils/prisma-error';
 import { sanitizeUser } from '@/utils/sanitize-user';
 import type { StudentSignupData, StudentSignupInput } from '@/types/auth';
 import type { ServiceResponse } from '@/types/api';
-
-const uniqueConstraintFields = (error: Prisma.PrismaClientKnownRequestError): string => {
-  const target = error.meta?.target;
-  return Array.isArray(target) ? target.join(',') : String(target ?? '');
-};
 
 export const studentSignupService = {
   execute: async (input: StudentSignupInput): Promise<ServiceResponse<StudentSignupData>> => {
@@ -49,7 +45,7 @@ export const studentSignupService = {
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        if (uniqueConstraintFields(error).includes('studentNumber')) {
+        if (getUniqueConstraintFields(error).includes('studentNumber')) {
           return {
             status: 'error',
             code: 409,

@@ -61,6 +61,21 @@ const ROLE_LABELS: Record<Role, string> = {
   supervisor: "Company supervisor applicant",
 }
 
+const ROLE_COPY: Record<Role, { title: string; lede: string }> = {
+  student: {
+    title: "Apply as a student",
+    lede: "Create your applicant record. Your department and program are confirmed by the college before you are deployed.",
+  },
+  dean: {
+    title: "Apply as a dean",
+    lede: "Request a dean account for your department. College accounts are verified by the internship office before access is granted.",
+  },
+  supervisor: {
+    title: "Apply as a company supervisor",
+    lede: "Request a supervisor account for your company. Accounts are verified with the college before access is granted.",
+  },
+}
+
 const YEAR_LEVELS = [1, 2, 3, 4, 5, 6]
 const yearLevelItems = YEAR_LEVELS.map((level) => ({ value: String(level), label: `Year ${level}` }))
 
@@ -222,7 +237,6 @@ export default function SignupForm({ role }: SignupFormProps) {
         response?: { data?: { path?: string; message?: string; errors?: { path: string; message: string }[] } }
       }
       const serverError = axiosError?.response?.data
-      console.error("Signup form error:", serverError)
 
       if (serverError?.errors?.length) {
         let attached = false
@@ -249,47 +263,65 @@ export default function SignupForm({ role }: SignupFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="flex w-full items-center justify-between mb-6">
-        <Link href="/" className="text-sm font-medium text-[var(--cpc-navy)] hover:underline">
-          ← Back to Cordova Public College
-        </Link>
-        <Link href="/login" className="text-sm text-[var(--cpc-slate)] hover:text-[var(--cpc-crimson)] hover:underline">
-          Already have an account? Sign in
-        </Link>
-      </div>
+    <div className="w-full max-w-md">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-sm font-medium text-[var(--cpc-navy)] transition-colors hover:text-[var(--cpc-crimson)]"
+      >
+        ← Back to Cordova Public College
+      </Link>
 
-      <form id="form-rhf-signup" onSubmit={form.handleSubmit(onSubmit)}>
+      <h1 className="mt-7 font-serif text-display-md font-semibold tracking-tight text-[var(--cpc-navy)] sm:text-display-lg">
+        {ROLE_COPY[role].title}
+      </h1>
+      <p className="mt-3 text-sm leading-relaxed text-[var(--cpc-slate)]">
+        {ROLE_COPY[role].lede}
+      </p>
+      <p className="mt-4 text-sm text-[var(--cpc-slate)]">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="font-medium text-[var(--cpc-crimson)] hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
+
+      <form
+        id="form-rhf-signup"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-8"
+      >
         <FieldGroup>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="form-rhf-firstName">First name</FieldLabel>
-              <Input id="form-rhf-firstName" required autoComplete="given-name" aria-invalid={!!errors.firstName} {...form.register("firstName")} />
+              <Input id="form-rhf-firstName" required autoComplete="given-name" aria-invalid={!!errors.firstName} className="h-11 px-3.5" {...form.register("firstName")} />
               <FieldError errors={[errors.firstName]} />
             </Field>
             <Field>
               <FieldLabel htmlFor="form-rhf-middleName">Middle name</FieldLabel>
-              <Input id="form-rhf-middleName" autoComplete="additional-name" aria-invalid={!!errors.middleName} {...form.register("middleName")} />
+              <Input id="form-rhf-middleName" autoComplete="additional-name" aria-invalid={!!errors.middleName} className="h-11 px-3.5" {...form.register("middleName")} />
               <FieldError errors={[errors.middleName]} />
             </Field>
             <Field>
               <FieldLabel htmlFor="form-rhf-lastName">Last name</FieldLabel>
-              <Input id="form-rhf-lastName" required autoComplete="family-name" aria-invalid={!!errors.lastName} {...form.register("lastName")} />
+              <Input id="form-rhf-lastName" required autoComplete="family-name" aria-invalid={!!errors.lastName} className="h-11 px-3.5" {...form.register("lastName")} />
               <FieldError errors={[errors.lastName]} />
             </Field>
             <Field>
               <FieldLabel htmlFor="form-rhf-email">Email address</FieldLabel>
-              <Input id="form-rhf-email" type="email" required autoComplete="email" aria-invalid={!!errors.email} {...form.register("email")} />
+              <Input id="form-rhf-email" type="email" required autoComplete="email" aria-invalid={!!errors.email} className="h-11 px-3.5" {...form.register("email")} />
               <FieldError errors={[errors.email]} />
             </Field>
             <Field>
               <FieldLabel htmlFor="form-rhf-password">Password</FieldLabel>
-              <PasswordInput id="form-rhf-password" required autoComplete="new-password" aria-invalid={!!errors.password} {...form.register("password")} />
+              <PasswordInput id="form-rhf-password" required autoComplete="new-password" aria-invalid={!!errors.password} className="h-11 pl-3.5" {...form.register("password")} />
               <FieldError errors={[errors.password]} />
             </Field>
             <Field>
               <FieldLabel htmlFor="form-rhf-contactNumber">Contact number</FieldLabel>
-              <Input id="form-rhf-contactNumber" autoComplete="tel" aria-invalid={!!errors.contactNumber} {...form.register("contactNumber")} />
+              <Input id="form-rhf-contactNumber" autoComplete="tel" aria-invalid={!!errors.contactNumber} className="h-11 px-3.5" {...form.register("contactNumber")} />
               <FieldError errors={[errors.contactNumber]} />
             </Field>
           </div>
@@ -299,7 +331,7 @@ export default function SignupForm({ role }: SignupFormProps) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="form-rhf-studentNumber">Student number</FieldLabel>
-                  <Input id="form-rhf-studentNumber" required aria-invalid={!!errors.studentNumber} {...form.register("studentNumber")} />
+                  <Input id="form-rhf-studentNumber" required aria-invalid={!!errors.studentNumber} className="h-11 px-3.5" {...form.register("studentNumber")} />
                   <FieldError errors={[errors.studentNumber]} />
                 </Field>
                 <Controller
@@ -313,7 +345,7 @@ export default function SignupForm({ role }: SignupFormProps) {
                         value={String(field.value)}
                         onValueChange={(value) => field.onChange(value === null ? 0 : Number(value))}
                       >
-                        <SelectTrigger id="form-rhf-yearLevel" aria-invalid={fieldState.invalid}>
+                        <SelectTrigger id="form-rhf-yearLevel" aria-invalid={fieldState.invalid} className="h-11 w-full data-[size=default]:h-11">
                           <SelectValue placeholder="Select year level" />
                         </SelectTrigger>
                         <SelectContent>
@@ -348,7 +380,7 @@ export default function SignupForm({ role }: SignupFormProps) {
                     }}
                     disabled={departmentsLoading}
                   >
-                    <SelectTrigger id="form-rhf-departmentId" aria-invalid={fieldState.invalid}>
+                    <SelectTrigger id="form-rhf-departmentId" aria-invalid={fieldState.invalid} className="h-11 w-full data-[size=default]:h-11">
                       <SelectValue placeholder="Choose a department" />
                     </SelectTrigger>
                     <SelectContent>
@@ -379,7 +411,7 @@ export default function SignupForm({ role }: SignupFormProps) {
                     onValueChange={(value) => field.onChange(value ?? "")}
                     disabled={!departmentId || departmentsLoading}
                   >
-                    <SelectTrigger id="form-rhf-programId" aria-invalid={fieldState.invalid}>
+                    <SelectTrigger id="form-rhf-programId" aria-invalid={fieldState.invalid} className="h-11 w-full data-[size=default]:h-11">
                       <SelectValue placeholder="Choose a program" />
                     </SelectTrigger>
                     <SelectContent>
@@ -408,7 +440,7 @@ export default function SignupForm({ role }: SignupFormProps) {
                       onValueChange={(value) => field.onChange(value ?? "")}
                       disabled={companiesLoading || !departmentId}
                     >
-                      <SelectTrigger id="form-rhf-companyId" aria-invalid={fieldState.invalid}>
+                      <SelectTrigger id="form-rhf-companyId" aria-invalid={fieldState.invalid} className="h-11 w-full data-[size=default]:h-11">
                         <SelectValue placeholder="Choose a company" />
                       </SelectTrigger>
                       <SelectContent>
@@ -426,23 +458,21 @@ export default function SignupForm({ role }: SignupFormProps) {
               />
               <Field>
                 <FieldLabel htmlFor="form-rhf-position">Position</FieldLabel>
-                <Input id="form-rhf-position" placeholder="e.g. Internship Coordinator" aria-invalid={!!errors.position} {...form.register("position")} />
+                <Input id="form-rhf-position" placeholder="e.g. Internship Coordinator" aria-invalid={!!errors.position} className="h-11 px-3.5" {...form.register("position")} />
                 <FieldError errors={[errors.position]} />
               </Field>
             </>
           )}
         </FieldGroup>
 
-        <Field orientation="horizontal" className="mt-6">
-          <Button
-            type="submit"
-            form="form-rhf-signup"
-            disabled={isSubmitting}
-            className="w-full bg-[var(--cpc-navy)] text-[var(--cpc-navy-foreground)] hover:bg-[var(--cpc-navy)]/90"
-          >
-            {isSubmitting ? "Submitting…" : `Submit ${ROLE_LABELS[role]} application`}
-          </Button>
-        </Field>
+        <Button
+          type="submit"
+          form="form-rhf-signup"
+          disabled={isSubmitting}
+          className="mt-7 h-11 w-full"
+        >
+          {isSubmitting ? "Submitting…" : `Submit ${ROLE_LABELS[role]} application`}
+        </Button>
       </form>
     </div>
   )
